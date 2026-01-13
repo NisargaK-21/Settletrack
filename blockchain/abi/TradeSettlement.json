@@ -1,0 +1,35 @@
+[
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tradeId", "type": "uint256" },
+      { "internalType": "address", "name": "buyer", "type": "address" },
+      { "internalType": "address", "name": "seller", "type": "address" },
+      { "internalType": "uint256", "name": "quantity", "type": "uint256" },
+      { "internalType": "uint256", "name": "price", "type": "uint256" }
+    ],
+    "name": "recordTrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tradeId", "type": "uint256" }
+    ],
+    "name": "settleTrade",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tradeId", "type": "uint256" }
+    ],
+    "name": "getTradeStatus",
+    "outputs": [
+      { "internalType": "uint8", "name": "", "type": "uint8" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+]

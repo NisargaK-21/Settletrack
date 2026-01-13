@@ -1,4 +1,14 @@
 Contract Address:
-0xYourDeployedContractAddressHere
+0xd9145CCE52D386f254917e481eB44e9943F39138
+
 Network:
-Sepolia / Remix VM
+Remix VM (Osaka)
+
+Settlement Transaction Hash:
+0x861dfd73a0d139404bab6ae8620f92bef4e8b53dc2aecfef7083505ac34e39fe
+
+Trade ID:
+101
+
+Settlement Status:
+Settled (1)
