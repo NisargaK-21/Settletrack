@@ -1,0 +1,8 @@
+# Node dependencies
+backend/node_modules/
+
+# Environment files
+.env
+
+# Blockchain generated ABI
+blockchain/abi/TradeSettlement.json
