@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import settlementRoutes from "./routes/settlement.routes.js";
-
 const app = express();
 
 app.use(cors());
