@@ -29,7 +29,7 @@ async function initializeBlockchain() {
     //✅ CORRECT ABI PATH (Windows safe)
     const abiPath = path.resolve(
       process.cwd(),
-      "../blockchain/abi/TradeSettlement.json"
+      "blockchain/abi/TradeSettlement.json"
     );
 
 //     // ✅ This uses the location of the current file to go up to the root
