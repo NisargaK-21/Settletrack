@@ -179,10 +179,14 @@ async function initializeBlockchain() {
     
     // 3. Initialize Wallet
     wallet = new ethers.Wallet(blockchainConfig.privateKey, provider);
-
+      
+const abiPath = path.resolve(
+      process.cwd(),
+      "blockchain/abi/TradeSettlement.json"
+    );
     // 4. ✅ ROBUST ABI PATH RESOLUTION
     // This ensures the file is found even if your project root changes on Railway
-    const abiPath = path.join(process.cwd(), "blockchain", "abi", "TradeSettlement.json");
+    // const abiPath = path.join(process.cwd(), "blockchain", "abi", "TradeSettlement.json");
 
     if (!fs.existsSync(abiPath)) {
       throw new Error(`ABI file missing at: ${abiPath}`);
