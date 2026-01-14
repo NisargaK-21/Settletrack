@@ -6,3 +6,29 @@ backend/node_modules/
 
 # Blockchain generated ABI
 blockchain/abi/TradeSettlement.json
+
+# Node dependencies
+backend/node_modules/
+
+# Environment files
+.env
+
+# Blockchain generated ABI
+blockchain/abi/TradeSettlement.json
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data and Models
+# (Large files like .csv and .pkl)
+ml/data/*.csv
+ml/model/*.pkl
+
+# Environments
+.venv/
+env/
+venv/
+ENV/
+
