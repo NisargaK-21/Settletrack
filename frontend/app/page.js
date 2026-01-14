@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -32,84 +31,105 @@ export default function Home() {
   const statusConfig = {
     connected: {
       text: 'Connected',
-      color: 'bg-green-500',
+      color: 'bg-emerald-500',
+      shadow: 'shadow-emerald-500/20',
     },
     warning: {
       text: 'Partially Connected',
-      color: 'bg-yellow-500',
+      color: 'bg-amber-500',
+      shadow: 'shadow-amber-500/20',
     },
     disconnected: {
       text: 'Disconnected',
-      color: 'bg-red-500',
+      color: 'bg-rose-500',
+      shadow: 'shadow-rose-500/20',
     },
     connecting: {
       text: 'Connecting...',
-      color: 'bg-gray-400',
+      color: 'bg-slate-400',
+      shadow: 'shadow-slate-400/20',
     },
   };
 
   return (
-    <main className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <div className="bg-white shadow-lg rounded-xl p-8 max-w-2xl w-full">
-        {/* Title */}
-        <h1 className="text-4xl font-bold text-center mb-2 text-gray-800">
-          SettleTrack
-        </h1>
-        <p className="text-center text-gray-600 mb-6">
-          Smart Settlement Risk Detection using Blockchain & Machine Learning
-        </p>
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-indigo-100">
+      <div className="max-w-4xl mx-auto px-6 py-16">
 
-        {/* Connection Status */}
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <span
-            className={`w-3 h-3 rounded-full ${statusConfig[connectionStatus].color}`}
-          />
-          <span className="font-medium text-gray-700">
-            Backend Status: {statusConfig[connectionStatus].text}
-          </span>
+        <header className="mb-12 text-center">
+          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-4">
+            Settle<span className="text-indigo-600">Track</span>
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Smart Settlement Risk Detection using Blockchain & Machine Learning
+          </p>
+        </header>
+
+        <div className="flex flex-col items-center mb-10">
+          <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm ${statusConfig[connectionStatus].shadow} transition-all duration-500`}>
+            <span className={`relative flex h-3 w-3`}>
+              {connectionStatus === 'connected' && (
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              )}
+              <span className={`relative inline-flex rounded-full h-3 w-3 ${statusConfig[connectionStatus].color}`}></span>
+            </span>
+            <span className="text-sm font-medium text-slate-700">
+              System {statusConfig[connectionStatus].text}
+            </span>
+          </div>
+
+          {error && (
+            <div className="mt-4 px-4 py-2 bg-rose-50 border border-rose-100 text-rose-600 text-sm rounded-lg">
+              {error}
+            </div>
+          )}
         </div>
 
-        {error && (
-          <p className="text-center text-red-600 text-sm mb-4">{error}</p>
-        )}
-
-        {/* System Info */}
-        <div className="bg-gray-50 rounded-lg p-5 mb-6">
-          <h2 className="text-lg font-semibold mb-3 text-gray-700">
-            System Overview
-          </h2>
-          <ul className="space-y-2 text-gray-600">
-            <li>✓ Blockchain Integration: Smart contracts deployed</li>
-            <li>✓ ML Models: Anomaly detection ready</li>
-            <li>✓ Backend API: Running & monitored</li>
-            <li>✓ Frontend: Next.js with Tailwind CSS</li>
-          </ul>
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-10">
+          <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50">
+            <h2 className="text-lg font-semibold text-slate-800">System Overview</h2>
+          </div>
+          
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { label: 'Blockchain Integration', desc: 'Smart contracts deployed' },
+                { label: 'ML Models', desc: 'Anomaly detection ready' },
+                { label: 'Backend API', desc: 'Running & monitored' },
+                { label: 'Frontend', desc: 'Next.js & Tailwind CSS' }
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="mt-1 bg-indigo-50 rounded-full p-1">
+                    <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-800 text-sm">{item.label}</p>
+                    <p className="text-slate-500 text-xs">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link
-            href="/settle"
-            className="flex-1 text-center bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition"
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Link 
+            href="/settle" 
+            className="flex items-center justify-center px-6 py-3.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-200"
           >
-            Go to Settlement Platform
+            Settlement Platform
           </Link>
-
-          <Link
-            href="/risk"
-            className="flex-1 text-center bg-purple-600 text-white py-3 rounded-lg hover:bg-purple-700 transition"
+          <Link 
+            href="/risk" 
+            className="flex items-center justify-center px-6  py-3.5 bg-white text-slate-700 border border-slate-200 font-semibold rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
           >
             ML Risk Detection
           </Link>
-
-          <Link
-            href="/dashboard"
-            className="flex-1 text-center bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition"
-          >
-            Dashboard
-          </Link>
+  
         </div>
       </div>
-    </main>
+    </div>
   );
 }
