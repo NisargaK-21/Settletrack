@@ -222,16 +222,40 @@
 #     # 🟢 ALLOW: This will now catch your 0.15 score
 #     return "ALLOW"
 
+# def decide_action(risk_score, is_anomaly):
+#     # 🔴 BLOCK: If it's an anomaly AND risk score is present
+#     # Using 0.10 because your log showed 0.11 for the big trade
+#     if is_anomaly and risk_score >= 0.10:
+#         return "BLOCK_TRANSACTION"
+
+#     # 🟡 REVIEW: If it's an anomaly OR risk score is moderate
+#     # We'll use 0.14 to catch your "small" trade's 0.15
+#     if is_anomaly or risk_score >= 0.14:
+#         return "REVIEW_TRANSACTION"
+
+#     # 🟢 ALLOW: Everything else
+#     return "ALLOW"
 def decide_action(risk_score, is_anomaly):
-    # 🔴 BLOCK: If it's an anomaly AND risk score is present
-    # Using 0.10 because your log showed 0.11 for the big trade
+    """
+    Decision engine that:
+    - Uses raw ML risk_score + anomaly flag
+    - Returns BOTH:
+        1. recommended_action (business decision)
+        2. ui_fraud_probability (encoded for frontend thresholds)
+
+    Frontend thresholds (unchanged):
+      < 0.3  -> LOW
+      0.3-0.7 -> MEDIUM
+      > 0.7  -> HIGH
+    """
+
+    # 🔴 BLOCK → HIGH risk (force frontend to show HIGH)
     if is_anomaly and risk_score >= 0.10:
-        return "BLOCK_TRANSACTION"
+        return "BLOCK_TRANSACTION", 0.90
 
-    # 🟡 REVIEW: If it's an anomaly OR risk score is moderate
-    # We'll use 0.14 to catch your "small" trade's 0.15
+    # 🟡 REVIEW → MEDIUM risk
     if is_anomaly or risk_score >= 0.14:
-        return "REVIEW_TRANSACTION"
+        return "REVIEW_TRANSACTION", 0.50
 
-    # 🟢 ALLOW: Everything else
-    return "ALLOW"
+    # 🟢 ALLOW → LOW risk
+    return "ALLOW", 0.10

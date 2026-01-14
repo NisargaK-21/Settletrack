@@ -54,17 +54,89 @@
 #     }
 
 
+# from fastapi import FastAPI
+# from fastapi.middleware.cors import CORSMiddleware
+# from pydantic import BaseModel
+# import pickle
+
+# from utils.feature_builder import build_features
+# from utils.decision_engine import decide_action
+
+# app = FastAPI()
+
+# # Add CORS middleware
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
+
+# with open("model/risk_model.pkl", "rb") as f:
+#     risk_model = pickle.load(f)
+
+# with open("model/anomaly_model.pkl", "rb") as f:
+#     anomaly_model = pickle.load(f)
+
+# class TradeData(BaseModel):
+#     tradeId: int
+#     buyer: str
+#     seller: str
+#     quantity: int
+#     price: float
+
+# def detect_anomaly(X):
+#     return anomaly_model.predict(X)[0] == -1
+
+# @app.post("/api/predict")
+# def predict(trade: TradeData):
+#     # Convert trade data to expected format for the model
+#     # Map trade data to the 7 features the model expects
+#     transaction_data = {
+#         'step': trade.tradeId % 744,  # Simulate step (0-743)
+#         'type': 1,  # Simulate transaction type
+#         'amount': trade.price * trade.quantity,  # Total transaction amount
+#         'oldbalanceOrg': trade.price * 10,  # Simulate old balance
+#         'newbalanceOrig': trade.price * 9,  # Simulate new balance
+#         'oldbalanceDest': trade.quantity * 100,  # Simulate destination balance
+#         'newbalanceDest': trade.quantity * 101,  # Simulate new destination balance
+#     }
+    
+#     # Create a list for feature building in correct order
+#     X = [[
+#         transaction_data['step'],
+#         transaction_data['type'],
+#         transaction_data['amount'],
+#         transaction_data['oldbalanceOrg'],
+#         transaction_data['newbalanceOrig'],
+#         transaction_data['oldbalanceDest'],
+#         transaction_data['newbalanceDest'],
+#     ]]
+
+#     fraud_prob = float(risk_model.predict_proba(X)[0][1])
+#     anomaly = bool(detect_anomaly(X))
+
+
+#     action = decide_action(fraud_prob, anomaly)
+
+#     return {
+#         "fraud_probability": round(fraud_prob, 3),
+#         "unusual_behavior": anomaly,
+#         "recommended_action": action
+#     }
+
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import pickle
 
-from utils.feature_builder import build_features
 from utils.decision_engine import decide_action
 
 app = FastAPI()
 
-# Add CORS middleware
+# CORS (allow frontend access)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -73,12 +145,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load ML models
 with open("model/risk_model.pkl", "rb") as f:
     risk_model = pickle.load(f)
 
 with open("model/anomaly_model.pkl", "rb") as f:
     anomaly_model = pickle.load(f)
 
+# Input schema
 class TradeData(BaseModel):
     tradeId: int
     buyer: str
@@ -86,42 +160,59 @@ class TradeData(BaseModel):
     quantity: int
     price: float
 
+
 def detect_anomaly(X):
+    """
+    Isolation Forest:
+      -1 -> anomaly
+       1 -> normal
+    """
     return anomaly_model.predict(X)[0] == -1
+
 
 @app.post("/api/predict")
 def predict(trade: TradeData):
-    # Convert trade data to expected format for the model
-    # Map trade data to the 7 features the model expects
+    """
+    ML Prediction Flow:
+    1. Build transaction-style features
+    2. Predict raw fraud probability
+    3. Detect anomaly
+    4. Decision engine decides action + UI-compatible probability
+    5. Return response to frontend (NO frontend logic changes needed)
+    """
+
+    # --- Feature construction (simulated balances for demo) ---
     transaction_data = {
-        'step': trade.tradeId % 744,  # Simulate step (0-743)
-        'type': 1,  # Simulate transaction type
-        'amount': trade.price * trade.quantity,  # Total transaction amount
-        'oldbalanceOrg': trade.price * 10,  # Simulate old balance
-        'newbalanceOrig': trade.price * 9,  # Simulate new balance
-        'oldbalanceDest': trade.quantity * 100,  # Simulate destination balance
-        'newbalanceDest': trade.quantity * 101,  # Simulate new destination balance
+        "step": trade.tradeId % 744,
+        "type": 1,  # TRANSFER
+        "amount": trade.price * trade.quantity,
+        "oldbalanceOrg": trade.price * 10,
+        "newbalanceOrig": trade.price * 9,
+        "oldbalanceDest": trade.quantity * 100,
+        "newbalanceDest": trade.quantity * 101,
     }
-    
-    # Create a list for feature building in correct order
+
     X = [[
-        transaction_data['step'],
-        transaction_data['type'],
-        transaction_data['amount'],
-        transaction_data['oldbalanceOrg'],
-        transaction_data['newbalanceOrig'],
-        transaction_data['oldbalanceDest'],
-        transaction_data['newbalanceDest'],
+        transaction_data["step"],
+        transaction_data["type"],
+        transaction_data["amount"],
+        transaction_data["oldbalanceOrg"],
+        transaction_data["newbalanceOrig"],
+        transaction_data["oldbalanceDest"],
+        transaction_data["newbalanceDest"],
     ]]
 
-    fraud_prob = float(risk_model.predict_proba(X)[0][1])
+    # --- ML predictions ---
+    fraud_prob_raw = float(risk_model.predict_proba(X)[0][1])
     anomaly = bool(detect_anomaly(X))
 
 
-    action = decide_action(fraud_prob, anomaly)
+    # --- Decision engine ---
+    action, ui_prob = decide_action(fraud_prob_raw, anomaly)
 
+    # --- API response ---
     return {
-        "fraud_probability": round(fraud_prob, 3),
+        "fraud_probability": ui_prob,     # 👈 encoded for frontend thresholds
         "unusual_behavior": anomaly,
         "recommended_action": action
     }
