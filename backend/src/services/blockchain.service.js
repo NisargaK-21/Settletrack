@@ -32,12 +32,17 @@ async function initializeBlockchain() {
     //   "../blockchain/abi/TradeSettlement.json"
     // );
 
-    // ✅ This uses the location of the current file to go up to the root
-const abiPath = path.resolve(__dirname, "../../blockchain/abi/TradeSettlement.json");
+//     // ✅ This uses the location of the current file to go up to the root
+// const abiPath = path.resolve(__dirname, "../../blockchain/abi/TradeSettlement.json");
+    // ✅ REPLACE your current abiPath logic with this exact code:
+const abiPath = path.join(process.cwd(), "blockchain", "abi", "TradeSettlement.json");
+
+// If you moved the folder inside 'backend', this will find it perfectly.
+const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
 
 
 
-    const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
+    // const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
 
     contract = new ethers.Contract(
       blockchainConfig.contractAddress,
