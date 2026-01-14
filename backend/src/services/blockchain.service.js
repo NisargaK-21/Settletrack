@@ -25,16 +25,40 @@ const contract = new ethers.Contract(
   wallet
 );
 
+// export const recordTrade = async (trade) => {
+//   const tx = await contract.recordTrade(
+//     trade.tradeId,
+//     trade.buyer,
+//     trade.seller,
+//     trade.quantity,
+//     trade.price
+//   );
+//   await tx.wait();
+//   return tx.hash;
+// };
 export const recordTrade = async (trade) => {
-  const tx = await contract.recordTrade(
-    trade.tradeId,
-    trade.buyer,
-    trade.seller,
-    trade.quantity,
-    trade.price
-  );
-  await tx.wait();
-  return tx.hash;
+  try {
+    console.log("Calling recordTrade with:", trade);
+
+    const tx = await contract.recordTrade(
+      trade.tradeId,
+      trade.buyer,
+      trade.seller,
+      trade.quantity,
+      trade.price
+    );
+
+    console.log("TX SENT:", tx.hash);
+
+    await tx.wait();
+
+    console.log("TX CONFIRMED");
+
+    return tx.hash;
+  } catch (err) {
+    console.error("BLOCKCHAIN ERROR:", err);
+    throw err;
+  }
 };
 
 export const settleTrade = async (tradeId) => {

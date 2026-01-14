@@ -12,6 +12,9 @@ router.post("/trade", async (req, res) => {
     // if (risk.level === "HIGH") {
     //   return res.status(400).json({ message: "High risk trade" });
     // }
+    // TEMP: ML disabled for demo
+const risk = { level: "LOW" };
+
 
     const txHash = await recordTrade(trade);
     res.json({ txHash });
