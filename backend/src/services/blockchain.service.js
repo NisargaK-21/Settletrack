@@ -26,7 +26,7 @@ async function initializeBlockchain() {
     
     wallet = new ethers.Wallet(blockchainConfig.privateKey, provider);
 
-    ✅ CORRECT ABI PATH (Windows safe)
+    //✅ CORRECT ABI PATH (Windows safe)
     const abiPath = path.resolve(
       process.cwd(),
       "../blockchain/abi/TradeSettlement.json"
