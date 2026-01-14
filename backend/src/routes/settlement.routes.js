@@ -1,8 +1,43 @@
 import express from "express";
-import { recordTrade, settleTrade, getTradeStatus } from "../services/blockchain.service.js";
+import { recordTrade, settleTrade, getTradeStatus, getBlockchainStatus } from "../services/blockchain.service.js";
 import { checkRisk } from "../services/ml.service.js";
 
 const router = express.Router();
+
+// Health check endpoint
+router.get("/health", async (req, res) => {
+  try {
+    const blockchainStatus = getBlockchainStatus();
+    res.json({ 
+      status: "ok",
+      backend: "running",
+      blockchain: blockchainStatus
+    });
+  } catch (err) {
+    console.error("Health check error:", err);
+    res.status(500).json({
+      error: "Health check failed"
+    });
+  }
+});
+
+// Get all trades
+router.get("/trades", async (req, res) => {
+  try {
+    const blockchainStatus = getBlockchainStatus();
+    // Return a placeholder response or fetch from a database if implemented
+    res.json({ 
+      trades: [],
+      message: "Trade history endpoint - database integration required",
+      blockchain: blockchainStatus
+    });
+  } catch (err) {
+    console.error("Error fetching trades:", err);
+    res.status(500).json({
+      error: err.message || "Failed to fetch trades"
+    });
+  }
+});
 
 router.post("/trade", async (req, res) => {
   try {
@@ -43,17 +78,15 @@ router.post("/settle/:tradeId", async (req, res) => {
     const txHash = await settleTrade(req.params.tradeId);
     res.json({ txHash });
   } catch (err) {
-  console.error("FULL ERROR:", err);
-
-  res.status(500).json({
-    error:
-      err.reason ||
-      err.error?.message ||
-      err.message ||
-      err.toString()
-  });
-}
-
+    console.error("FULL ERROR:", err);
+    res.status(500).json({
+      error:
+        err.reason ||
+        err.error?.message ||
+        err.message ||
+        err.toString()
+    });
+  }
 });
 
 router.get("/status/:tradeId", async (req, res) => {
@@ -61,17 +94,15 @@ router.get("/status/:tradeId", async (req, res) => {
     const status = await getTradeStatus(req.params.tradeId);
     res.json({ status });
   } catch (err) {
-  console.error("FULL ERROR:", err);
-
-  res.status(500).json({
-    error:
-      err.reason ||
-      err.error?.message ||
-      err.message ||
-      err.toString()
-  });
-}
-
+    console.error("GET STATUS ERROR:", err);
+    res.status(500).json({
+      error:
+        err.reason ||
+        err.error?.message ||
+        err.message ||
+        err.toString()
+    });
+  }
 });
 
 export default router;

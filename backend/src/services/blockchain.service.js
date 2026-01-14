@@ -7,43 +7,70 @@ import { blockchainConfig } from "../config/blockchain.config.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Blockchain connection
-const provider = new ethers.JsonRpcProvider(blockchainConfig.rpcUrl);
-const wallet = new ethers.Wallet(blockchainConfig.privateKey, provider);
+let contract = null;
+let provider = null;
+let wallet = null;
+let connectionError = null;
 
-// ✅ CORRECT ABI PATH (Windows safe)
-const abiPath = path.resolve(
-  process.cwd(),
-  "../blockchain/abi/TradeSettlement.json"
-);
+// Initialize blockchain connection
+async function initializeBlockchain() {
+  try {
+    provider = new ethers.JsonRpcProvider(blockchainConfig.rpcUrl);
+    
+    // Test the connection with a timeout
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Connection timeout")), 5000)
+    );
+    
+    await Promise.race([provider.getNetwork(), timeoutPromise]);
+    
+    wallet = new ethers.Wallet(blockchainConfig.privateKey, provider);
 
-const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
+    // ✅ CORRECT ABI PATH (Windows safe)
+    const abiPath = path.resolve(
+      process.cwd(),
+      "../blockchain/abi/TradeSettlement.json"
+    );
 
-const contract = new ethers.Contract(
-  blockchainConfig.contractAddress,
-  contractABI,
-  wallet
-);
+    const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
 
-// export const recordTrade = async (trade) => {
-//   const tx = await contract.recordTrade(
-//     trade.tradeId,
-//     trade.buyer,
-//     trade.seller,
-//     trade.quantity,
-//     trade.price
-//   );
-//   await tx.wait();
-//   return tx.hash;
-// };
+    contract = new ethers.Contract(
+      blockchainConfig.contractAddress,
+      contractABI,
+      wallet
+    );
+
+    connectionError = null;
+    console.log("✅ Blockchain connection successful");
+    return true;
+  } catch (err) {
+    connectionError = err.message;
+    console.error("❌ Blockchain connection failed:", err.message);
+    return false;
+  }
+}
+
+// Initialize on startup (non-blocking)
+initializeBlockchain().catch(err => {
+  console.error("Startup initialization error:", err.message);
+});
+
 export const recordTrade = async (trade) => {
   try {
+    if (!contract) {
+      throw new Error("Blockchain not connected. Ganache must be running on http://127.0.0.1:7545");
+    }
+
     console.log("Calling recordTrade with:", trade);
+
+    // Ensure addresses are properly formatted to avoid ENS resolution issues
+    const buyerAddress = ethers.getAddress(trade.buyer);
+    const sellerAddress = ethers.getAddress(trade.seller);
 
     const tx = await contract.recordTrade(
       trade.tradeId,
-      trade.buyer,
-      trade.seller,
+      buyerAddress,
+      sellerAddress,
       trade.quantity,
       trade.price
     );
@@ -62,11 +89,50 @@ export const recordTrade = async (trade) => {
 };
 
 export const settleTrade = async (tradeId) => {
-  const tx = await contract.settleTrade(tradeId);
-  await tx.wait();
-  return tx.hash;
+  try {
+    if (!contract) {
+      throw new Error("Blockchain not connected. Ganache must be running on http://127.0.0.1:7545");
+    }
+    
+    const tx = await contract.settleTrade(tradeId);
+    await tx.wait();
+    return tx.hash;
+  } catch (err) {
+    console.error("SETTLEMENT ERROR:", err);
+    throw err;
+  }
 };
 
 export const getTradeStatus = async (tradeId) => {
-  return await contract.getTradeStatus(tradeId);
+  try {
+    if (!contract) {
+      throw new Error("Blockchain not connected. Ganache must be running on http://127.0.0.1:7545");
+    }
+    
+    // Try to get the trade status with error handling
+    let status;
+    try {
+      status = await contract.getTradeStatus(tradeId);
+    } catch (err) {
+      // If contract call fails, return "Not Found"
+      console.log("Trade not found or contract error:", err.message);
+      return "Not Found";
+    }
+    
+    // Convert status number to string
+    const statusMap = { 0: "Pending", 1: "Settled" };
+    return statusMap[status] || "Unknown";
+  } catch (err) {
+    console.error("GET STATUS ERROR:", err);
+    throw err;
+  }
+};
+
+export const getBlockchainStatus = () => {
+  return {
+    connected: contract !== null,
+    error: connectionError,
+    rpcUrl: blockchainConfig.rpcUrl,
+    contractAddress: blockchainConfig.contractAddress
+  };
 };
