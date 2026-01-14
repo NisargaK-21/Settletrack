@@ -27,10 +27,15 @@ async function initializeBlockchain() {
     wallet = new ethers.Wallet(blockchainConfig.privateKey, provider);
 
     // ✅ CORRECT ABI PATH (Windows safe)
-    const abiPath = path.resolve(
-      process.cwd(),
-      "../blockchain/abi/TradeSettlement.json"
-    );
+    // const abiPath = path.resolve(
+    //   process.cwd(),
+    //   "../blockchain/abi/TradeSettlement.json"
+    // );
+
+    // ✅ This uses the location of the current file to go up to the root
+const abiPath = path.resolve(__dirname, "../../blockchain/abi/TradeSettlement.json");
+
+
 
     const contractABI = JSON.parse(fs.readFileSync(abiPath, "utf8"));
 
