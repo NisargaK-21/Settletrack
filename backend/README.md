@@ -1,18 +1,20 @@
-Instant Trade Settlement – Backend & Blockchain Integration
+SettleTrack – Backend & Blockchain Integration
 Overview
 
 This repository contains the backend service for the Instant Trade Settlement Platform.
+
 The backend acts as the orchestration layer between:
 
 Blockchain settlement smart contract
 
-Machine Learning risk intelligence service (pluggable)
+Machine Learning risk intelligence service
 
 Frontend dashboard
 
 The backend exposes REST APIs to record trades, settle trades, and query settlement status.
 
 System Architecture
+
 Frontend (React / Web)
 |
 | REST API
@@ -23,25 +25,26 @@ Backend (Node.js / Express)
 v
 Blockchain (Ethereum / Ganache / Remix VM)
 
-Backend ↔ ML Service (optional, REST)
+Backend ↔ Machine Learning Risk Service (REST-based)
 
 Folder Structure
+
 backend/
 │
 ├── src/
-│ ├── index.js # App entry point
+│ ├── index.js – App entry point
 │ │
 │ ├── config/
-│ │ └── blockchain.config.js # RPC URL, contract address, private key
+│ │ └── blockchain.config.js – RPC URL, contract address, private key
 │ │
 │ ├── routes/
-│ │ └── settlement.routes.js # REST API routes
+│ │ └── settlement.routes.js – REST API routes
 │ │
 │ ├── services/
-│ │ ├── blockchain.service.js # Smart contract interaction logic
-│ │ └── ml.service.js # Risk intelligence abstraction
+│ │ ├── blockchain.service.js – Smart contract interaction logic
+│ │ └── ml.service.js – Machine learning risk intelligence integration
 │
-├── .env # Environment variables
+├── .env – Environment variables
 ├── package.json
 └── README.md
 
@@ -50,17 +53,17 @@ Smart Contract
 
 Contract Name: TradeSettlement
 
-Responsibilities:
+Responsibilities
 
-Record trade (Pending)
+Record trade with Pending status
 
-Settle trade (Settled)
+Settle trade and mark as Settled
 
-Emit events for audit
+Emit events for audit and traceability
 
 Required Blockchain Files
 
-Located in /blockchain folder (outside backend):
+Located in the /blockchain folder (outside backend):
 
 blockchain/
 ├── abi/
@@ -78,129 +81,123 @@ Ganache OR Remix VM (contract already deployed)
 Git
 
 Installation
-cd backend
-npm install
+
+Navigate to backend folder and install dependencies.
 
 Environment Variables (.env)
 
-Create .env in backend/:
+Create a .env file inside the backend directory with:
 
-PORT=5000
+Backend port
 
-RPC_URL=http://127.0.0.1:7545
-PRIVATE_KEY=<ganache_account_private_key>
-CONTRACT_ADDRESS=<deployed_contract_address>
+Ganache RPC URL
 
-⚠️ Use same RPC + accounts used during contract deployment
+Private key used during contract deployment
+
+Deployed contract address
+
+⚠️ Ensure the RPC URL and account match the deployment environment.
 
 Running Backend
-npm start
 
-Expected output:
+Start the backend server using npm.
 
-Backend running on port 5000
+Expected output confirms the backend is running on the configured port.
 
 API Endpoints
 1️⃣ Record Trade
 
 POST
-
 /api/settlement/trade
 
-Request Body
+Records a trade on the blockchain with Pending status.
 
-{
-"tradeId": 101,
-"buyer": "0xBuyerAddress",
-"seller": "0xSellerAddress",
-"quantity": 50,
-"price": 100
-}
-
-Response
-
-{
-"txHash": "0xabc123..."
-}
-
-Records trade on-chain with Pending status.
+Before writing to the blockchain, the backend performs a machine learning risk evaluation.
 
 2️⃣ Settle Trade
 
 POST
-
 /api/settlement/settle/:tradeId
 
-Response
-
-{
-"txHash": "0xsettlementHash..."
-}
-
-Marks trade as Settled on blockchain.
+Marks the specified trade as Settled on the blockchain.
 
 3️⃣ Get Trade Status
 
 GET
-
 /api/settlement/status/:tradeId
 
-Response
+Returns the current status of the trade.
 
-{
-"status": 1
-}
-
-Status:
+Status values:
 
 0 → Pending
 
 1 → Settled
 
-Machine Learning Integration (Pluggable)
-Current Implementation (Mocked)
-export const checkRisk = async (trade) => {
-return { level: "LOW" };
-};
+Machine Learning Integration (Enabled)
+Purpose
 
-This ensures:
+The machine learning service acts as an intelligence layer that evaluates fraud risk before irreversible blockchain settlement.
 
-Backend works without ML service
+Blockchain ensures immutability and trust
 
-No runtime dependency failure
+Machine learning ensures fraud detection and decision support
 
-How ML Team Integrates Later
+Current Implementation
 
-Replace mock with real inference call:
+The backend is now integrated with a live ML risk service instead of a mocked response.
 
-import axios from "axios";
+The ML service is accessed via a REST API and evaluates each trade before it is recorded on-chain.
 
-export const checkRisk = async (trade) => {
-const res = await axios.post("http://localhost:8000/predict", trade);
-return res.data;
-};
+The backend converts trade data into transaction-style features expected by the ML model and sends them for inference.
 
-ML service responsibilities:
+ML Risk Evaluation Flow
 
-Accept trade features
+Trade request
+→ Backend receives request
+→ Backend calls ML service
+→ ML service returns risk classification
+→ Backend proceeds with blockchain execution
 
-Return:
+Risk Categories
 
-riskScore
+The ML service returns one of the following decisions:
 
-riskLevel (LOW / MEDIUM / HIGH)
+ALLOW – Trade is considered safe
 
-Backend already handles:
+REVIEW – Trade is suspicious and may require manual verification
 
-Blocking HIGH risk trades
+BLOCK – Trade is considered high risk
 
-Allowing LOW/MEDIUM trades
+Current Enforcement Mode
+
+ML risk evaluation is enabled and logged
+
+Trades are not blocked automatically (demo-friendly mode)
+
+This allows:
+
+Full end-to-end flow demonstration
+
+Easy switch to enforcement in production
+
+Blocking logic can be enabled later without architectural changes.
+
+ML Service Dependency
+
+The backend expects a machine learning service running locally.
+
+ML service runs independently
+
+Backend communicates via REST
+
+Failure of ML service can be handled gracefully
 
 Frontend Integration Guide
 
-Frontend never talks to blockchain directly.
+Frontend never communicates directly with the blockchain.
 
-Frontend consumes:
+Frontend consumes data provided by backend APIs:
 
 Trade ID
 
@@ -208,12 +205,12 @@ Settlement status
 
 Blockchain transaction hash
 
-Timestamp
+Timestamps
 
-Suggested UI:
+Suggested UI components:
 
 Trade cards
 
 Settlement timeline
 
-TX hash audit link
+Blockchain transaction audit link
