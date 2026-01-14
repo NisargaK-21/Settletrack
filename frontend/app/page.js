@@ -52,14 +52,14 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-indigo-100">
+    <div className="min-h-screen bg-[#4f7fb0] text-slate-900 font-sans selection:bg-indigo-100">
       <div className="max-w-4xl mx-auto px-6 py-16">
 
         <header className="mb-12 text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl mb-4">
-            Settle<span className="text-indigo-600">Track</span>
+            Settle<span className="text-indigo-800">Track</span>
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-slate-900 max-w-2xl mx-auto leading-relaxed">
             Smart Settlement Risk Detection using Blockchain & Machine Learning
           </p>
         </header>
@@ -84,8 +84,8 @@ export default function Home() {
           )}
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-10">
-          <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50">
+        <div className="bg-white border border-slate-300 rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mb-10">
+          <div className="px-8 py-6 border-b border-slate-300 bg-slate-50/50">
             <h2 className="text-lg font-semibold text-slate-800">System Overview</h2>
           </div>
           

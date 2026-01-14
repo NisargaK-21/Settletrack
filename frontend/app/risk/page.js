@@ -114,7 +114,7 @@ export default function RiskDetection() {
                     type="number"
                     placeholder="e.g. 88291"
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm"
+                    className="w-full bg-slate-50 text-slate-600 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm"
                   />
                 </div>
 
@@ -124,7 +124,7 @@ export default function RiskDetection() {
                     name="buyer"
                     placeholder="0x..."
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono text-xs"
+                    className="w-full bg-slate-50 text-slate-600 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono text-xs"
                   />
                 </div>
 
@@ -134,7 +134,7 @@ export default function RiskDetection() {
                     name="seller"
                     placeholder="0x..."
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono text-xs"
+                    className="w-full bg-slate-50 text-slate-600 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all font-mono text-xs"
                   />
                 </div>
 
@@ -145,7 +145,7 @@ export default function RiskDetection() {
                     type="number"
                     placeholder="0"
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold"
+                    className="w-full bg-slate-50 text-slate-600 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold"
                   />
                 </div>
 
@@ -156,7 +156,7 @@ export default function RiskDetection() {
                     type="number"
                     placeholder="0.00"
                     onChange={handleChange}
-                    className="w-full bg-slate-50 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold"
+                    className="w-full bg-slate-50 text-slate-600 border border-slate-200 p-3.5 rounded-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-sm font-semibold"
                   />
                 </div>
               </div>
