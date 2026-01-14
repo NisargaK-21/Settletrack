@@ -1,19 +1,21 @@
-SettleTrack – Backend & Blockchain Integration
-Overview
+# SettleTrack – Backend & Blockchain Integration Overview
 
-This repository contains the backend service for the Instant Trade Settlement Platform.
+This repository contains the **backend service** for the **Instant Trade Settlement Platform**.
 
-The backend acts as the orchestration layer between:
+The backend acts as the **orchestration layer** between:
 
-Blockchain settlement smart contract
+- Blockchain settlement smart contract  
+- Machine Learning risk intelligence service  
+- Frontend dashboard  
 
-Machine Learning risk intelligence service
+The backend exposes REST APIs to:
+- Record trades
+- Settle trades
+- Query settlement status
 
-Frontend dashboard
+---
 
-The backend exposes REST APIs to record trades, settle trades, and query settlement status.
-
-System Architecture
+## System Architecture
 
 Frontend (React / Web)
 |
@@ -27,43 +29,44 @@ Blockchain (Ethereum / Ganache / Remix VM)
 
 Backend ↔ Machine Learning Risk Service (REST-based)
 
-Folder Structure
+
+## Folder Structure
 
 backend/
 │
 ├── src/
-│ ├── index.js – App entry point
+│ ├── index.js # App entry point
 │ │
 │ ├── config/
-│ │ └── blockchain.config.js – RPC URL, contract address, private key
+│ │ └── blockchain.config.js # RPC URL, contract address, private key
 │ │
 │ ├── routes/
-│ │ └── settlement.routes.js – REST API routes
+│ │ └── settlement.routes.js # REST API routes
 │ │
 │ ├── services/
-│ │ ├── blockchain.service.js – Smart contract interaction logic
-│ │ └── ml.service.js – Machine learning risk intelligence integration
+│ │ ├── blockchain.service.js # Smart contract interaction logic
+│ │ └── ml.service.js # Machine learning risk intelligence integration
 │
-├── .env – Environment variables
+├── .env # Environment variables
 ├── package.json
 └── README.md
 
-Blockchain Layer
-Smart Contract
 
-Contract Name: TradeSettlement
+## Blockchain Layer – Smart Contract
 
-Responsibilities
+**Contract Name:** `TradeSettlement`
 
-Record trade with Pending status
+### Responsibilities
 
-Settle trade and mark as Settled
+- Record trade with **Pending** status
+- Settle trade and mark as **Settled**
+- Emit events for audit and traceability
 
-Emit events for audit and traceability
+---
 
-Required Blockchain Files
+## Required Blockchain Files
 
-Located in the /blockchain folder (outside backend):
+Located in the `/blockchain` folder (outside backend):
 
 blockchain/
 ├── abi/
@@ -71,72 +74,67 @@ blockchain/
 ├── deployment/
 │ └── deployed-address.txt
 
-Environment Setup
-Prerequisites
 
-Node.js ≥ 18
+## Environment Setup – Prerequisites
 
-Ganache OR Remix VM (contract already deployed)
+- Node.js ≥ 18
+- Ganache **OR** Remix VM (contract already deployed)
+- Git
 
-Git
+---
 
-Installation
+## Installation
 
-Navigate to backend folder and install dependencies.
+Navigate to the backend directory and install dependencies:
 
+```
+cd backend
+npm install
 Environment Variables (.env)
+Create a .env file inside the backend directory with the following values:
 
-Create a .env file inside the backend directory with:
+env
+Copy code
+PORT=5000
+BLOCKCHAIN_RPC_URL=http://127.0.0.1:8545
+PRIVATE_KEY=your_private_key_here
+CONTRACT_ADDRESS=your_deployed_contract_address
+ML_SERVICE_URL=http://127.0.0.1:8000/api/predict
+⚠️ Important:
+Ensure the RPC URL and account match the environment where the smart contract was deployed.
 
-Backend port
+Running the Backend
+Start the backend server:
 
-Ganache RPC URL
 
-Private key used during contract deployment
-
-Deployed contract address
-
-⚠️ Ensure the RPC URL and account match the deployment environment.
-
-Running Backend
-
-Start the backend server using npm.
-
+npm run dev
 Expected output confirms the backend is running on the configured port.
 
 API Endpoints
 1️⃣ Record Trade
-
-POST
-/api/settlement/trade
+POST /api/settlement/trade
 
 Records a trade on the blockchain with Pending status.
 
 Before writing to the blockchain, the backend performs a machine learning risk evaluation.
 
 2️⃣ Settle Trade
-
-POST
-/api/settlement/settle/:tradeId
+POST /api/settlement/settle/:tradeId
 
 Marks the specified trade as Settled on the blockchain.
 
 3️⃣ Get Trade Status
-
-GET
-/api/settlement/status/:tradeId
+GET /api/settlement/status/:tradeId
 
 Returns the current status of the trade.
 
-Status values:
-
+Status Values
 0 → Pending
 
 1 → Settled
 
 Machine Learning Integration (Enabled)
 Purpose
-
 The machine learning service acts as an intelligence layer that evaluates fraud risk before irreversible blockchain settlement.
 
 Blockchain ensures immutability and trust
@@ -144,23 +142,24 @@ Blockchain ensures immutability and trust
 Machine learning ensures fraud detection and decision support
 
 Current Implementation
+The backend is integrated with a live ML risk service
 
-The backend is now integrated with a live ML risk service instead of a mocked response.
+ML evaluation is performed via a REST API
 
-The ML service is accessed via a REST API and evaluates each trade before it is recorded on-chain.
-
-The backend converts trade data into transaction-style features expected by the ML model and sends them for inference.
+Trade data is converted into transaction-style features expected by the ML model
 
 ML Risk Evaluation Flow
 
-Trade request
-→ Backend receives request
-→ Backend calls ML service
-→ ML service returns risk classification
-→ Backend proceeds with blockchain execution
-
+Trade Request
+   ↓
+Backend receives request
+   ↓
+Backend calls ML service
+   ↓
+ML service returns risk classification
+   ↓
+Backend proceeds with blockchain execution
 Risk Categories
-
 The ML service returns one of the following decisions:
 
 ALLOW – Trade is considered safe
@@ -170,23 +169,18 @@ REVIEW – Trade is suspicious and may require manual verification
 BLOCK – Trade is considered high risk
 
 Current Enforcement Mode
-
 ML risk evaluation is enabled and logged
 
 Trades are not blocked automatically (demo-friendly mode)
 
-This allows:
-
+Why this mode?
 Full end-to-end flow demonstration
 
 Easy switch to enforcement in production
 
-Blocking logic can be enabled later without architectural changes.
+Blocking logic can be enabled later without architectural changes
 
 ML Service Dependency
-
-The backend expects a machine learning service running locally.
-
 ML service runs independently
 
 Backend communicates via REST
@@ -194,11 +188,11 @@ Backend communicates via REST
 Failure of ML service can be handled gracefully
 
 Frontend Integration Guide
+Frontend never communicates directly with the blockchain
 
-Frontend never communicates directly with the blockchain.
+Frontend consumes backend APIs only
 
-Frontend consumes data provided by backend APIs:
-
+Data provided to frontend
 Trade ID
 
 Settlement status
@@ -207,10 +201,20 @@ Blockchain transaction hash
 
 Timestamps
 
-Suggested UI components:
-
+Suggested UI Components
 Trade cards
 
 Settlement timeline
 
-Blockchain transaction audit link
+Blockchain transaction audit links
+
+Summary
+SettleTrack’s backend ensures:
+
+Secure blockchain settlement
+
+Intelligent ML-based risk analysis
+
+Clean separation between frontend, blockchain, and ML layers
+
+Scalable, production-ready architecture
