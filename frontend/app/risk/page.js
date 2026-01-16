@@ -18,47 +18,42 @@ export default function RiskDetection() {
  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const RISK_API = `${BACKEND_URL}/api/settlement/risk`;
 
-  const handleChange = (e) => {
-    setTradeData({
-      ...tradeData,
-      [e.target.name]: e.target.value,
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setRiskResult(null);
+
+  try {
+    const res = await fetch(RISK_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        tradeId: Number(tradeData.tradeId),
+        buyer: tradeData.buyer,
+        seller: tradeData.seller,
+        quantity: Number(tradeData.quantity),
+        price: Number(tradeData.price),
+      }),
     });
-  };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setRiskResult(null);
+    const data = await res.json();
 
-    try {
-      const res = await fetch(ML_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tradeId: Number(tradeData.tradeId),
-          buyer: tradeData.buyer,
-          seller: tradeData.seller,
-          quantity: Number(tradeData.quantity),
-          price: Number(tradeData.price),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error('ML service error');
-      }
-
-      setRiskResult(data);
-    } catch (err) {
-      setError('Unable to fetch ML risk analysis');
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      throw new Error(data.error || 'Risk service error');
     }
-  };
+
+    setRiskResult(data);
+  } catch (err) {
+    console.error(err);
+    setError('Unable to fetch ML risk analysis');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const getRiskLevel = (prob) => {
     if (prob < 0.3) return 'LOW';
