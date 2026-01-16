@@ -17,8 +17,9 @@ export default function RiskDetection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
- const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const RISK_API = `${BACKEND_URL}/api/settlement/risk`;
+ //const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const BACKEND_URL = "https://zonal-forgiveness-production-a585.up.railway.app";
+const RISK_API = `${BACKEND_URL}/api/settlement/risk`;
 
     const handleChange = (e) => {
     const { name, value } = e.target;
