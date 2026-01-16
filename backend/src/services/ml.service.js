@@ -31,53 +31,56 @@
 //   }
 // };
 
-
 import axios from "axios";
 
+/**
+ * Calls the ML Risk Scoring service deployed on Railway
+ */
 export const checkRisk = async (trade) => {
   try {
-    const mlData = {
+    // Prepare payload exactly as ML expects
+    const mlPayload = {
       tradeId: Number(trade.tradeId),
       buyer: trade.buyer,
       seller: trade.seller,
       quantity: Number(trade.quantity),
-      price: Number(trade.price)
+      price: Number(trade.price),
     };
 
-    console.log("Sending to ML service:", mlData);
-    console.log("ML URL:", process.env.ML_SERVICE_URL);
+    // IMPORTANT: ML_SERVICE_URL must be base `/api`
+    // Example:
+    // https://settletrack-production-0dd3.up.railway.app/api
+    const mlUrl = `${process.env.ML_SERVICE_URL}/predict`;
+
+    console.log("🔁 ML URL:", mlUrl);
+    console.log("📤 Sending to ML:", mlPayload);
 
     const response = await axios.post(
-      process.env.ML_SERVICE_URL,
-      mlData,
+      mlUrl,
+      mlPayload,
       {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        timeout: 5000
+        timeout: 8000,
       }
     );
 
-    console.log("ML Response:", response.data);
+    console.log("✅ ML Response:", response.data);
+
     return response.data;
-
   } catch (err) {
-    console.error("❌ ML SERVICE ERROR");
+    console.error(
+      "❌ ML SERVICE ERROR:",
+      err.response?.data || err.message
+    );
 
-    if (err.response) {
-      console.error("Status:", err.response.status);
-      console.error("Data:", err.response.data);
-    } else {
-      console.error("Message:", err.message);
-    }
-
-    // Safe fallback so UI doesn't break
+    // Safe fallback so UI never crashes
     return {
-      fraud_probability: 0.1,
+      fraud_probability: 0.0,
       unusual_behavior: false,
-      recommended_action: "REVIEW_TRANSACTION",
-      error: "ML service unavailable"
+      recommended_action: "ALLOW",
+      error: "ML service unreachable",
     };
   }
 };
-
