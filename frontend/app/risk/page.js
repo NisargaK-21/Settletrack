@@ -20,6 +20,15 @@ export default function RiskDetection() {
  const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
   const RISK_API = `${BACKEND_URL}/api/settlement/risk`;
 
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+    setTradeData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+
 const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
