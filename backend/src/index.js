@@ -92,7 +92,9 @@ const corsOptions = {
 // 2. APPLY MIDDLEWARE
 // Handle OPTIONS pre-flight requests globally before other routes
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); 
+//app.options("*", cors(corsOptions)); 
+app.options("/*", cors(corsOptions));
+
 
 app.use(express.json());
 
