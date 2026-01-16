@@ -17,7 +17,8 @@ export default function Settlement() {
     price: '',
   });
 
-  const BASE_URL = 'http://localhost:5000';
+ const BASE_URL = 'https://zonal-forgiveness-production-a585.up.railway.app';
+
 
   const handleRecordTrade = async () => {
     if (!recordForm.tradeId || !recordForm.quantity || !recordForm.price) {

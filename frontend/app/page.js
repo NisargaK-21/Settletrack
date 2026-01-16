@@ -9,10 +9,11 @@ export default function Home() {
   useEffect(() => {
     const checkBackendHealth = async () => {
       try {
-        const healthRes = await fetch('http://localhost:5000/health');
-        const settlementRes = await fetch(
-          'http://localhost:5000/api/settlement/health'
-        );
+        const BASE_URL = 'https://zonal-forgiveness-production-a585.up.railway.app';
+
+const healthRes = await fetch(`${BASE_URL}/health`);
+const settlementRes = await fetch(`${BASE_URL}/api/settlement/health`);
+
 
         if (healthRes.ok && settlementRes.ok) {
           setConnectionStatus('connected');
