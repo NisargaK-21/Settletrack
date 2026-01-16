@@ -21,6 +21,22 @@ router.get("/health", async (req, res) => {
   }
 });
 
+router.post("/risk", async (req, res) => {
+  try {
+    const trade = req.body;
+
+    const risk = await checkRisk(trade);
+
+    res.json(risk);
+  } catch (err) {
+    console.error("ML RISK ERROR:", err);
+    res.status(500).json({
+      error: "ML service failed"
+    });
+  }
+});
+
+
 // Get all trades
 router.get("/trades", async (req, res) => {
   try {
