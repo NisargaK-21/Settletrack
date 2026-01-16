@@ -15,7 +15,8 @@ export default function RiskDetection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const ML_URL = 'http://localhost:8000/api/predict';
+ const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const RISK_API = `${BACKEND_URL}/api/settlement/risk`;
 
   const handleChange = (e) => {
     setTradeData({
