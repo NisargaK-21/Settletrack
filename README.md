@@ -364,22 +364,22 @@ python -m uvicorn api:app --workers 4 --port 8000
 ┌─────────────────────────────────────────────────────────────┐
 │                        USER INTERFACE                       │
 │              (Next.js Frontend - Port 3000)                 │
-│  ┌──────────────┬────────────────┬──────────────────────┐  │
-│  │ Home Page    │ Risk Page      │ Settlement Page      │  │
-│  │ Dashboard    │ Monitoring     │ Trade Management     │  │
-│  └──────────────┴────────────────┴──────────────────────┘  │
+│  ┌──────────────┬────────────────┬──────────────────────┐   │
+│  │ Home Page    │ Risk Page      │ Settlement Page      │   │
+│  │ Dashboard    │ Monitoring     │ Trade Management     │   │
+│  └──────────────┴────────────────┴──────────────────────┘   │
 └──────────────────────┬──────────────────────────────────────┘
                        │ HTTP/REST (Axios)
                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                   BACKEND API LAYER                         │
-│            (Express.js - Port 5000)                         │
+┌────────────────────────────────────────────────────────────┐
+│                   BACKEND API LAYER                        │
+│            (Express.js - Port 5000)                        │
 │  ┌──────────────┬────────────────┬──────────────────────┐  │
 │  │ Settlement   │ Risk Check     │ Trade Status         │  │
 │  │ Routes       │ Endpoint       │ Endpoint             │  │
 │  └──────────────┴────────────────┴──────────────────────┘  │
-└──────┬───────────────────────────────────────┬──────────────┘
-       │                                       │
+└──────┬──────────────────────────────────────┬──────────────┘
+       │                                      │
        ├─── Web3/Ethers.js ──────────┐        │
        │                             │        │
        ▼                             ▼        ▼
@@ -890,10 +890,6 @@ npm start
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
-
-## License
-
-This project is licensed under the ISC License - see the LICENSE file for details.
 
 ## Support
 
